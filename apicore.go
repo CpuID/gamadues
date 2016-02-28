@@ -2,6 +2,7 @@ package gamadues
 
 import (
 	"encoding/json"
+	"errors"
 	"io/ioutil"
 	"net/http"
 )
@@ -36,18 +37,26 @@ func (gm *Gamadeus) GetVersion() string {
 
 func (gm *Gamadeus) makeRequestGet(endPoint string, returnData interface{}) error {
 	callURL := gm.PrimaryURL + "/" + endPoint + "&apikey=" + gm.APIKey.Key
+	//fmt.Println(callURL)
 	res, err := http.Get(callURL)
 	defer res.Body.Close()
 	if err != nil {
+		//fmt.Println(err.Error())
 		return err
 	}
 	jsonDataFromHTTP, err := ioutil.ReadAll(res.Body)
 	if err != nil {
+		//fmt.Println(err.Error())
 		return err
 	}
-	err = json.Unmarshal([]byte(jsonDataFromHTTP), returnData)
+	err = json.Unmarshal([]byte(jsonDataFromHTTP), &returnData)
 	if err != nil {
+		//fmt.Println(err.Error())
 		return err
+	}
+	if res.StatusCode != 200 {
+		//fmt.Printf("%+v", returnData)
+		return errors.New("Non OK response received")
 	}
 	return nil
 }

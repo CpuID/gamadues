@@ -1,5 +1,7 @@
 package gamadues
 
+import "errors"
+
 //InspirationRequest - Defining the request body of Inspiration Search
 type InspirationRequest struct {
 	Origin          string  `json:"origin"`
@@ -16,6 +18,8 @@ type InspirationRequest struct {
 type InspirationResult struct {
 	Origin   string `json:"origin"`
 	Currency string `json:"currency"`
+	Message  string `json:"message"`
+	Status   int64  `json:"status"`
 	Results  []struct {
 		Destination   string `json:"destination"`
 		DepartureDate string `json:"departure_date"`
@@ -34,13 +38,23 @@ func (gm *Gamadeus) GetInspirationRequest() *InspirationRequest {
 }
 
 //InspirationSearch - The interface to Inspiration search
-func (gm *Gamadeus) InspirationSearch(inspiR *InspirationRequest) *InspirationResult {
+func (gm *Gamadeus) InspirationSearch(inspiR InspirationRequest) (*InspirationResult, error) {
+	if testAPIKey(gm) == false {
+		return nil, errors.New("No API key")
+	}
+	if inspiR.Origin == "" {
+		return nil, errors.New("Origin is a required field")
+	}
 	if inspiR.AggregationMode != "" {
 		if stringInSlice(inspiR.AggregationMode, getArray(aggregationModes)) == false {
-			return nil
+			return nil, errors.New("Aggregation mode is not supported")
 		}
 	}
+	endPointParams := modifyToCallURL(inspiR)
 	result := InspirationResult{}
-	gm.makeRequestGet("flights/inspiration-search?origin=BOS&departure_date=2016-03-01--2016-03-15&duration=7--9&max_price=500", &result)
-	return &result
+	err := gm.makeRequestGet("flights/inspiration-search?"+endPointParams, &result)
+	if err != nil {
+		return &result, err
+	}
+	return &result, nil
 }
