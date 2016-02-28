@@ -1,2 +1,2 @@
 # gamadues
-The API access to Amadeus sandbox APIs. 
+Go library for the API access to Amadeus sandbox APIs. 
