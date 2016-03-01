@@ -41,21 +41,17 @@ func (gm *Gamadeus) makeRequestGet(endPoint string, returnData interface{}) erro
 	res, err := http.Get(callURL)
 	defer res.Body.Close()
 	if err != nil {
-		//fmt.Println(err.Error())
 		return err
 	}
 	jsonDataFromHTTP, err := ioutil.ReadAll(res.Body)
 	if err != nil {
-		//fmt.Println(err.Error())
 		return err
 	}
 	err = json.Unmarshal([]byte(jsonDataFromHTTP), &returnData)
 	if err != nil {
-		//fmt.Println(err.Error())
 		return err
 	}
 	if res.StatusCode != 200 {
-		//fmt.Printf("%+v", returnData)
 		return errors.New("Non OK response received")
 	}
 	return nil
