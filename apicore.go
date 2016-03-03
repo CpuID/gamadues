@@ -37,7 +37,7 @@ func (gm *Gamadeus) GetVersion() string {
 
 func (gm *Gamadeus) makeRequestGet(endPoint string, returnData interface{}) error {
 	//This is a test comment. Thanks
-	//Testing for the github web. Levi
+	//Testing for the github web. It should work now
 	callURL := gm.PrimaryURL + "/" + endPoint + "&apikey=" + gm.APIKey.Key
 	//fmt.Println(callURL)
 	res, err := http.Get(callURL)
